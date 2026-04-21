@@ -1,0 +1,164 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { deleteTeam, fetchTeams } from "@/redux/feature/team/team-action";
+import { RootState } from "@/redux/store";
+import { Box, Button, Typography, CircularProgress, Card, CardContent } from "@mui/material";
+import styles from "./team.module.css";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks.ts";
+import CreateTeamModal from "@/component/team-modal-form-comp/team-modal-form-comp";
+import { useRouter } from "next/navigation";
+import DeleteIcon from '@mui/icons-material/Delete';
+import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
+import { enqueueSnackbar } from "notistack";
+import { exitMember } from "@/redux/feature/member/member-action";
+import { exitTeamRemoved } from "@/redux/feature/team/team-slice";
+
+export default function Home() {
+    const dispatch = useAppDispatch();
+    const [open, setOpen] = useState(false);
+    const [selectedTeam, setSelectedTeam] = useState<any>(null);
+    const { user } = useAppSelector((state: RootState) => state.authReducer);
+    const { teams, total_teams, loading } = useAppSelector((state: RootState) => state.teamReducer);
+    const router = useRouter();
+
+    useEffect(() => {
+        dispatch(fetchTeams({}));
+    }, [dispatch]);
+
+    const handleDelete = async (uuid: string) => {
+        try {
+            await dispatch(deleteTeam({ uuid })).unwrap();
+        } catch (err: any) {
+            console.log('Deleteion Team Error', err);
+            enqueueSnackbar(err, { variant: "error" });
+        }
+    }
+
+    const handleExit = async (team_uuid: string) => {
+        try {
+            await dispatch(exitMember({ team_uuid })).unwrap();
+            dispatch(exitTeamRemoved({ team_uuid }));
+        } catch (err: any) {
+            console.log('Exit Team Error', err);
+            enqueueSnackbar(err, { variant: "error" });
+        }
+    }
+
+    return (
+        <Box className={styles.container}>
+            <Box className={styles.header}>
+                <Box>
+                    <Typography variant="h5">Welcome, {user?.name}</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                        {user?.email}
+                    </Typography>
+                </Box>
+
+                <Button
+                    variant="outlined"
+                    onClick={() => {
+                        setSelectedTeam(null);
+                        setOpen(true);
+                    }}
+                >
+                    Create Team
+                </Button>
+            </Box>
+
+            <Typography className={styles.total}>
+                Total Teams: {total_teams}
+            </Typography>
+
+            {loading ? (
+                <Box className={styles.loader}>
+                    <CircularProgress />
+                </Box>
+            ) : (
+                <Box className={styles.teamBox}>
+                    {teams.map((team) => (
+                        <Card className={styles.card} key={team.uuid}>
+                            <CardContent>
+                                <Box className={styles.meta}>
+                                    <Typography variant="h6" className={styles.name}>{team.name}</Typography>
+
+                                    <Box>
+                                        {team.creator.uuid !== user?.uid &&
+                                            <Button
+                                                sx={{ color: "#097969", borderColor: "#097969" }}
+                                                variant="outlined" onClick={() => handleExit(team.uuid)}>
+                                                <MeetingRoomIcon />
+                                            </Button>
+                                        }
+
+                                        {team.creator.uuid == user?.uid &&
+                                            <Button
+                                                sx={{ color: "#DB2D43", borderColor: "#DB2D43" }}
+                                                variant="outlined" onClick={() => handleDelete(team.uuid)}>
+                                                <DeleteIcon />
+                                            </Button>
+                                        }
+                                    </Box>
+                                </Box>
+                                <Typography
+                                    variant="body2"
+                                    color="text.secondary"
+                                    className={styles.description}
+                                >
+                                    {team.description}
+                                </Typography>
+
+                                <Box className={styles.meta}>
+                                    <Typography variant="caption">
+                                        By: {team.creator.name}
+                                    </Typography>
+                                    <Typography variant="caption">
+                                        {new Date(team.created_at).toLocaleDateString()}
+                                    </Typography>
+                                </Box>
+
+                                <Box className={styles.actionBox}>
+                                    <Button
+                                        variant="outlined"
+                                        onClick={() => router.push(`/team/${team.uuid}`)}
+                                    >
+                                        View Team
+                                    </Button>
+
+                                    <Button
+                                        variant="outlined"
+                                        onClick={() => router.push(`/team/${team.uuid}/project`)}
+                                    >
+                                        View Projects
+                                    </Button>
+
+                                    <Button
+                                        variant="outlined"
+                                        onClick={() => {
+                                            setSelectedTeam(team);
+                                            setOpen(true);
+                                        }}
+                                    >
+                                        Edit Team
+                                    </Button>
+                                </Box>
+                            </CardContent>
+                        </Card>
+                    ))}
+                </Box>
+            )}
+
+            {!loading && teams.length === 0 && (
+                <Typography className={styles.empty}>
+                    No teams found. Create your first team
+                </Typography>
+            )}
+
+            <CreateTeamModal
+                open={open}
+                onClose={() => setOpen(false)}
+                team={selectedTeam}
+            />
+        </Box >
+    );
+}
