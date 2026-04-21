@@ -5,8 +5,8 @@ import { ProjectRepository } from "src/infrastructure/repository/project.repo";
 import { TaskRepository } from "src/infrastructure/repository/task.repo";
 import { TaskCreateDto } from "./dto/task.create.dto";
 import { TaskUpdateDto } from "./dto/task.update.dto";
-import { MailTrapService } from "src/infrastructure/mailtrap/mailtrap";
-import { taskAssignmentTemplate } from "src/infrastructure/mailtrap/template/template";
+import { MailTrapService } from "src/infrastructure/mail/mail";
+import { taskAssignmentTemplate } from "src/infrastructure/mail/template/template";
 import { SocketService } from "src/infrastructure/socket/socket.service";
 
 @Injectable()

@@ -4,7 +4,7 @@ import { TeamRepository } from "src/infrastructure/repository/team.repo";
 import { MemberController } from "./member.controller";
 import { MemberService } from "./member.service";
 import { MemberRepository } from "src/infrastructure/repository/member.repo";
-import { MailTrapService } from "src/infrastructure/mailtrap/mailtrap";
+import { MailTrapService } from "src/infrastructure/mail/mail";
 import { SocketModule } from "src/infrastructure/socket/socket.module";
 
 @Module({

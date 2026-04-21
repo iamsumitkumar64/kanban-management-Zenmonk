@@ -6,9 +6,9 @@ import { MemberRepository } from "src/infrastructure/repository/member.repo";
 import { UserRepository } from "src/infrastructure/repository/user.repo";
 import { MemberRoleEnum } from "src/domain/enums/member.enum";
 import { MemberUpdateDto } from "./dto/member.update.dto";
-import { MailTrapService } from "src/infrastructure/mailtrap/mailtrap";
+import { MailTrapService } from "src/infrastructure/mail/mail";
 import { SocketService } from "src/infrastructure/socket/socket.service";
-import { teamMemberAddedTemplate } from "src/infrastructure/mailtrap/template/template";
+import { teamMemberAddedTemplate } from "src/infrastructure/mail/template/template";
 import { MemberExitDto } from "./dto/member.exit.dto";
 
 @Injectable()
@@ -168,7 +168,7 @@ export class MemberService {
     }
 
     async exitTeam(user: UserEntity, body: MemberExitDto) {
-        const isMemberExists = await this.memberRepo.getMemberByMemberUuidAndTeamUUid(body.team_uuid,user.uuid);
+        const isMemberExists = await this.memberRepo.getMemberByMemberUuidAndTeamUUid(body.team_uuid, user.uuid);
         if (!isMemberExists) {
             throw new BadRequestException("Member not found");
         }

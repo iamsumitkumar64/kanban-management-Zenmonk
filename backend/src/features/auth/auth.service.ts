@@ -2,8 +2,8 @@ import { UserRepository } from "src/infrastructure/repository/user.repo";
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { JwtHelperService } from "src/infrastructure/services/jwtservice";
 import admin from "src/infrastructure/firebase/firebase-admin.config";
-import { MailTrapService } from "src/infrastructure/mailtrap/mailtrap";
-import { welcomeEmailTemplate } from "src/infrastructure/mailtrap/template/template";
+import { MailTrapService } from "src/infrastructure/mail/mail";
+import { welcomeEmailTemplate } from "src/infrastructure/mail/template/template";
 
 @Injectable()
 export class AuthService {

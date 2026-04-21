@@ -4,7 +4,7 @@ import { ProjectRepository } from "src/infrastructure/repository/project.repo";
 import { TaskRepository } from "src/infrastructure/repository/task.repo";
 import { TaskService } from "./task.service";
 import { TaskController } from "./task.controller";
-import { MailTrapService } from "src/infrastructure/mailtrap/mailtrap";
+import { MailTrapService } from "src/infrastructure/mail/mail";
 
 @Module({
     imports: [],
